@@ -1,0 +1,705 @@
+\documentclass{report}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+
+% Títulos automáticos en español
+\usepackage[spanish]{babel}
+
+% Soporte para buenas urls e hipervínculos entre secciones
+\usepackage{hyperref}
+% colores
+\usepackage{xcolor}
+% Citas y referencias en formato APA
+% Si quiere las citas y referencias en IEEE comente esta línea
+\usepackage{apacite}
+
+% Imágenes y figuras
+\usepackage{graphicx}
+
+% Código fuente con números de línea
+\usepackage{listings}
+% Puede cambiar el lenguaje de código fuente
+% https://www.overleaf.com/learn/latex/code_listing#Supported_languages
+\lstset{
+    language=C,
+    basicstyle=\footnotesize,
+    numbers=left,
+    stepnumber=1,
+    showstringspaces=false,
+    tabsize=1,
+    breaklines=true,
+    breakatwhitespace=false,
+}
+
+
+\def \unidad{Instituto de Estadística}
+\def \programa{Ingeniería en Estadística y Ciencia de Datos}
+\def \titulo{Análisis factorial sobre datos de rasgos de personalidad del modelo de los cinco grandes obtenidos desde la librería \textit{``Psych"} de R}
+\vspace{0.3cm}
+\def \autores{
+    Ricardo Cristian Menares Eyzaguirre\\
+    ricardomenares1@gmail.com\\
+}
+\def \fecha{9 de Julio de 2022}
+\def \lugar{
+    Valparaíso, 
+    Chile
+}
+% Inicia el documento 
+\begin{document}
+
+% Inserta la portada del documento
+\input{portada}
+
+\tableofcontents
+\chapter{Resumen}
+El presente estudio busca explorar los resultados de una encuesta sobre el modelo de los cinco grandes de la librería \textit{Psych} de \textit{R}, específicamente en los datos llamados \textit{bfi} que cuenta con 2800 observaciones y 28 variables. Para ello, se realiza un análisis factorial para reducir la dimensionalidad de las variables de cada uno de los 5 rasgos del método en cuestión, logrando obtener una interpretabilidad perfecta. Además, se compara el análisis factorial con el análisis de componentes principales, donde si bien el segundo obtuvo una mayor proporción de variabilidad acumulada explicada, es el primer procedimiento el cual consigue una mayor interpretabilidad según la naturaleza de los datos.
+\chapter{Introducción}\label{intro}
+
+Es sabido que para poder describir la personalidad de una persona de manera perfecta, habría que señalar incontables características de ésta, lo cual sería un trabajo arduo. Además, no se puede saber con exactitud si se están tomando todas las variables que pueden diferenciar a un sujeto de otro. Es por lo anterior, que el investigar cuáles características son las más relevantes de una persona, se vuelve indispensable para poder diferenciar y catalogar diferentes personalidades.\\
+
+A lo largo de los años, han sido creados diferentes modelos que seleccionan distintos rasgos, donde el más conocido es el modelo de los cinco grandes (model Big five, en inglés) que fue descubierto experimentalmente en una investigación sobre las descripciones de personalidad de unas personas hacían de otras (Goldberg, 1993).\\
+
+Los 5 grandes rasgos de personalidad según Goldberg son los siguientes:\\
+
+\begin{itemize}
+    \item \textbf{Apertura a la experiencia (O):} inventiva/curiosa vs. consistente/cautelosa\\
+\item \textbf{Escrupulosidad (G):} eficiente/organizado frente a extravagante/descuidado
+\item \textbf{Extraversión (E):} extrovertida/enérgica vs. solitaria/reservada
+    \item  \textbf{Amabilidad (A):} amigable/compasivo vs. crítico/racional
+\item \textbf{Neuroticismo (N):} sensible/nervioso vs. resistente/seguro
+\end{itemize}\\
+
+Más específicamente, se destaca las siguientes características de cada factor:\\
+\begin{itemize}
+\item Apertura a la experiencia (O): El primer rasgo que se identifica en este modelo es la apertura a la experiencia, acuñado como el Factor O. Este rasgo está totalmente relacionado con la capacidad humana de buscar nuevas experiencias en nuestra vida, así mismo también tiene que ver con la habilidad de visualizar un futuro de forma creativa.\\
+
+Las personas con un nivel elevado de apertura a la experiencia son perfiles imaginativos, que aprecian la cultura y que consiguen establecer relaciones de equipo con los demás. Este tipo de personas persiguen el cambio continuo, ya que están seguras de que si se aferran a ideas fijas significa aferrarse al inmovilismo y a la quietud.\\
+
+\item Responsabilidad (C): El rasgo de la responsabilidad tiene que ver con la habilidad del autocontrol y la capacidad de diseñar métodos de acción eficaces. Las personas que tiene un alto grado de responsabilidad son grandes planificadores y organizadores, además de tener un fuerte compromiso con los objetivos y metas.\\
+
+A su vez, este tipo de perfiles son vistos por los demás como personas confiables y escrupulosas. En el caso de encontrar individuos con una puntuación extrema en este rasgo de personalidad se puede observar comportamientos demasiados perfeccionistas e incluso obsesivos, por ese motivo las personas de factor C requieren un cierto equilibrio para no caer en el extremo.\\
+
+\item Extraversión (E): La extraversión tiene que ver con el grado en el que el sujeto está abierto con los demás, es decir, el factor E analiza cuánto le agrada a un sujeto estar rodeado de los demás.\\
+
+Lógicamente, el perfil opuesto es el individuo introvertido, estas personas se caracterizan por tener una personalidad reservada, lo que los lleva a que en muchas ocasiones puedan ser juzgados como antipáticos. Los perfiles introvertidos son más reflexivos que los extrovertidos y les gusta menos formar parte de grupos elevados de personas, prefieren establecerse en una rutina y pasar tiempo con la familia.\\
+
+\item Amabilidad (A): La amabilidad es el rasgo que muestra el grado de tolerancia y respeto de una persona. Una persona amable será aquella que confía en la honestidad de la palabra, su vocación es prestar la ayuda a aquellos que lo necesiten. La humildad, la sencillez y la empatía son los atributos básicos de las personas amables.\\
+
+\item Neuroticismo (N): El neuroticismo es la resiliencia con la que una persona afronta las situaciones problemáticas en la vida, los individuos tranquilos no suelen sentir rabia y huyen del enfado, su estado es animado y saben gestionar correctamente las crisis personales. En el polo opuesto nos encontramos a las personas que se caracterizan por tener un comportamiento impredecible, ya que sus reacciones varían sin que sea muy claro por qué.
+\end{itemize}\\
+
+Es de vital importancia el poder investigar los rasgos de personalidad de las personas, ya sea para labores de contratación de personal en una empresa o entidad gubernamental, selección de estudiantes en una universidad e incluso para labores de análisis criminalístico. Es por lo anterior, que se vuelve indispensable estudiar el método de los cinco grandes, de manera que se pueda establecer conexiones entre sus variables. Es por ello, que el presente estudio busca realizar un análisis factorial para identificar que variables comparten información parecida, a través de los datos de la librería \texttt{Psych} de \texttt{R}.\\
+
+\newpage
+\section{Objetivo general}
+Examinar la estructura interna del \textit{Big Five Inventory} (BFI) mediante un análisis factorial, buscando reducir la dimensionalidad de los datos y lograr una interpretabilidad satisfactoria.
+\section{Objetivos específicos}
+\begin{enumerate}
+    \item Examinar el modelo teórico elegido para los datos obtenidos.
+    \item Aplicar experimentalmente diversos modelos de análisis factorial para las variables propuestas.
+    \item Comparar el método análisis factorial y de análisis de componentes principales.
+    \item Seleccionar el mejor método tomando en consideración la proporción de variabilidad acumulada explicada y la interpretabilidad obtenida.
+\end{enumerate}
+\chapter{Formulación teórica}
+\section{Estudios anteriores}
+Existen muchas investigaciones acerca de las variables del \textit{Big five}, debido a la popularidad que este modelo tiene. Comenzando, se observa la investigación de Barrio \& et al (2006) en donde explora sobre las diferencias por edad y sexo en los cinco factores de personalidad en una población infantil en España, administrado a 852 escolares (501 varones y 351 mujeres) de edades comprendidas entre 8 y 15 años. Como conclusión, destacan que encontraron patrones de personalidad en los niños, donde los sujetos de más edad presentaron significativamente más características de neuroticismo y extraversión y menores niveles de conciencia, apertura y agradabilidad, mientras que las chicas se caracterizaron por mayores rasgos de conciencia y agradabilidad.\\
+
+Sumado a lo anterior, Lovik \& et al. (2017) 
+examinaron una versión en holandés del modelo de los cinco grandes, usando una muestra procedente del estudio Divorce in Flanders. Se demostró que el BFI holandés tiene buenas propiedades psicométricas y una estructura factorial clara comparable a una muestra holandesa anterior y de la investigación internacional. Además, comparan el análisis factorial con rotación VARIMAX con el análisis de componentes principales con rotación VARIMAX, no difiriendo sustancialmente, sin embargo, el análisis factorial explicó de mejor manera la encuesta.\\
+
+Finalizando, Domínguez \& César (2018) realizaron un estudio de las variables del \textit{Big five} en 332 universitarios peruanos con (82.83\% mujeres) entre 16 y 48 años. En cuanto a los resultados. En conclusión, las versiones estudiadas evidencian indicadores psicométricos favorables que posibilitarían su uso en evaluaciones de grupo e investigación básica.
+
+
+\newpage
+\section{Correlación $\tau$ de Kendall}
+En consiguiente, se busca un método de correlación para las variables estudiadas, tomando en cuenta su naturalidad, a lo que se llega a un coeficiente de correlación particular. En estudios exploratorios y confirmatorios, las pruebas de correlaciones $\tau$ de kendall, propuesto por Kendall (1938), son utilizadas para el tratamiento de variables puramente ordinales. Es justamente esta prueba que se ocupará para tratar las variables del Big five, pues éstas son ordinales.\\
+
+Esta clase de correlación es una prueba de hipótesis no paramétrica para la dependencia estadística basada en el coeficiente τ. Para calcularla, primero se define un conjunto de observaciones de las variables aleatorias conjuntas X e Y, de modo que todos los valores de $x_{i},y_{i}$ son únicos (los vínculos se ignoran por simplicidad). Cualquier par de observaciones $(x_{i},y_{i})$ y $x_{j},y_{j}$ con $i<j$ se dice que son un par concordante si el orden de clasificación de $x_{i},x_{j}$ e $y_{i},y_{j}$ está de acuerdo: es decir, si ambos $x_{i}>x_{j}$ e $y_{i}>y_{j}$ o al revés, si ocurre lo contrario se dice que son discordantes. Entonces, el coeficiente τ de Kendall se define como:\\
+\begin{equation}
+    \tau=\frac{\text{(n° de pares concordantes)}-\text{(n° de pares discordantes)}}{\binom{n}{2}},\hspace{0.4cm} -1<\tau<1
+\end{equation}\\
+
+
+\newpage
+\section{Análisis factorial}
+En cuanto al análisis a realizar en este estudio, se ocupa un análisis factorial, en el cual según Rencher (2019) se representan las variables $y_{1},y_{2},...,y_{p}$ como combinaciones lineales de variables aleatorias $f_{1},f_{2},...,f_{m} (m<p)$ llamadas factores. Como las variables originales, los factores varían de un individuo a otro; pero a diferencia de las variables,
+los factores no se pueden medir ni observar. Si las variables $y_{1},y_{2},...,y_{p}$ están medianamente correlacionadas, la dimensionalidad efectiva es menor que p. Entonces, el objetivo del análisis de factor es reducir la redundancia entre variables utilizando un menor número de factores.\\
+
+Se define primero suponiendo una muestra $\mathbf{y_{1},y_{2},,,.,y_{p}}$ de una población homogénea con vectores de media $\bar{\boldsymbol{\mu}}$ y matriz de covarianza $\boldsymbol{\Sigma}$.\\
+
+Luego, el modelo de análisis de factor expresa cada variable como una combinación lineal de factores comunes subyacentes $f_{1},f_{2},...,f_{m}$, con un término de error que lo acompaña a dar cuenta de la parte de la variable que es única. El modelo para cualquier vector \mathbf{y} es el siguiente:\\
+    \begin{equation}
+        \centering{y_{1}-\mu_{1}=\lambda_{11}f_{1}+\lambda_{12}f_{2}+...+\lambda_{1m}f_{m}+\epsilon_{1}}\\
+
+        \centering{y_{2}-\mu_{2}=\lambda_{21}f_{1}+\lambda_{22}f_{2}+...+\lambda_{2m}f_{m}+\epsilon_{2}}\\
+        
+       \hspace{0.1cm} \vdots \\
+        
+        \centering{y_{p}-\mu_{p}=\lambda_{p1}f_{1}+\lambda_{p2}f_{2}+...+\lambda_{pm}f_{m}+\epsilon_{p}}\\
+        
+        \hspace{7.5cm}
+    \end{equation}
+    
+    Donde los $\lambda_{ij}$ son llamados \textit{loadings}, además, $m<p$. Luego, se asume $E(f_{j})=0$, $Var(f_{j})=1$ y $Cov(f_{j},f_{k})=0$ para todo $j$ y $k=1,2,...,m.$ Además, lo supuestos para $\epsilon_{i}$,i=1,2,...,p. son similares, pero se debe permitir que cada $\epsilon_{i}$ tenga varianza diferente, sea $\sigma^{2}$ pues representa la parte residual de $y_{i}$ que no es común con las otras  variables. Notar entonces, que la varianza de $y_{i}^{*}=y_{i}-\bar{\mu}$ es:\\
+    \begin{equation}
+        Var(y_{i}^{*})=\lambda_{i1}^{2}+\lambda_{i2}^{2}+...+\lambda_{im}^{2}+\sigma^{2}_{i}
+    \end{equation}\\
+
+En donde las sumas de los $\lambda_{im}^{2}$ se le dice comunalidad, que es la parte de variabilidad común entre factores, por otro lado, la parte de $\sigma_{i}^{2}$ es llamada varianza específica. \\
+
+Existen diversos métodos para estimar los factores en el análisis factorial, en el caso de esta investigación se usa el método de máxima verosimilitud por sus potentes propiedades. En cuanto el número de factores a usar, se busca en principio ocupar 5 (por el big five), sin embargo, se estará atento al \% de varianza que se está ocupando, además de cuantos factores son mayores a 1.\\
+
+Cabe destacar, que a veces es difícil obtener una interpretación a los factores resultantes al aplicar un análisis factorial, sin embargo, según Rencher (2019) los \textit{loadings} de los factores rotados conservan las propiedades esenciales de los originales, esto es, satisfacer todos los supuestos básicos y reproducir la matriz de covarianza. Es por eso que se pueden aplicar diversos tipos de rotaciones, en esta investigación, de ser necesario, se aplicará una rotación VARIMAX propuesta por Kaiser (1958) que resulta ser un método de rotación ortogonal que minimiza el número de variables que tienen altas cargas en cada factor. Este modelo se representa de la siguiente manera:\\
+\begin{equation}
+    R_{\text{VARIMAX}}=\underset{R}{\operatorname{arg máx}} \left(\frac{1}{p}\sum_{j=1}^{k}\sum_{i=1}^{p}(\Lambda R)_{ij}^{4}-\sum_{j=1}^{k}\left(\frac{1}{p}\sum_{i=1}^{p} (\Lambda R)_{ij}^{2} \right)\right)
+\end{equation}
+
+Donde $\Lambda$ es la matriz de las comunalidades, R la matriz de \textit{loadings} y $p$ el número total de variables.
+
+
+\newpage
+\section{Análisis de componentes principales}
+En adición y luego de analizar la investigación de Lovik \& et al (2017), se busca comparar los resultados del análisis factorial mediante otra técnica, la cual resulta ser el análisis de componentes principales(ACP) creado por Pearson (1908), que es otra técnica para reducir dimensionalidad, de las más conocidas y usadas en la actualidad. Este método busca un número de dimensiones que sean lo más interesantes posible medido por la variación de las observaciones en cada una de las dimensiones. Éstas dimensiones encontradas por ACP son combinaciones lineales de las p variables, donde el primer componente principal de un conjunto de variables $X_{1}, X_{2}, ..., X_{p}$ está dado por la combiación lineal normalizada:\\
+	 \begin{equation}
+	     \mathbf{z_{1}}=\Phi_{11}\mathbf{X_{1}}+\Phi_{21}\mathbf{X_{2}}+...+\Phi_{p1}\mathbf{X_{p}}
+	 \end{equation}\\
+	 
+Con: $\sum_{j=1}^{p}\Phi^{2}_{j1}=1$, donde los $\Phi_{j1}$,j=1,2,...,p. son comúnmente llamados ``\textit{loadings}". Así, éstos conforman el vector de \textit{loadings} del primer componente principal: $\mathbf{\Phi_{1}}=(\Phi_{11},\Phi_{21},...,\Phi_{p1})'$.\\
+
+Para poder calcular el primer componente principal, se asume que cada variable de X ha sido centrada en 0. Luego, se busca la combinación lineal de las variables que tenga mayor varianza:
+	\begin{equation}
+	    z_{i1}=\Phi_{11}X_{i1}+\Phi_{21}X_{i2}+...+\Phi_{p1}X_{ip}
+	\end{equation}\\
+	
+Es decir, se busca maximizar el siguiente problema:\\
+	\begin{equation}
+	    \underset{\Phi_{0},\Phi_{1},...,\Phi_{p}}{\operatorname{máx}} \left[\frac{1}{n}\sum_{i=1}^{n}\left(\sum_{j=1}^{p}\Phi_{j1}x_{ij} \right) \right]\\
+	    
+	    \hspace{3.5cm} \text{S.a:} \sum_{j=1}^{p}\Phi^{2}_{j1}=1 \hspace{1cm}
+	\end{equation}\\
+	
+Luego, las demás componentes principales se obtienen mediante la misma técnica, pero sin tomar en consideración a los primeros componentes que ya se han obtenido. Así, cada componente que se va obteniendo tiene menor varianza explicada que el anterior.\\
+
+
+\newpage
+\section{Ventaja principal de AF sobre ACP}
+Según Rencher (2019) una de las ventajas del análisis factorial por sobre el análisis de componentes principales es su flexibilidad para la interpretación, pues es posible hacer rotaciones al análisis factorial y obtener distintos resultados, no así en ACP, que se obtienen siempre los mismos. Es por esto, que en este tipo de estudios es conveniente usar un análisis factorial por sobre un análisis de componentes principales.\\
+
+\chapter{Metodología}\label{Metodología}
+\section{Base de datos}
+Se cuenta con la base de datos ``\texttt{bfi}" de la librería de R ``\texttt{Pysch}". Cuenta con 2800 observaciones y 28 variables, de las cuales 25 corresponden a 5 preguntas de cada factor del modelo de los cinco grandes y 3 variables demográficas de la persona, tales como el sexo (gender), educación (education) y edad (age). Las variables, explicadas una por una, son las siguientes:\\
+\begin{enumerate}
+    \item \textbf{A1:} Respuesta de 1 al 6 a: Soy indiferente a los sentimientos de los demás.
+    \item \textbf{A2:} Respuesta de 1 al 6 a: Pregunto sobre el bienestar de los demás.
+    \item \textbf{A3:} Respuesta de 1 al 6 a: Sé consolar a los demás.
+    \item \textbf{A4:} Respuesta de 1 al 6 a: Amo a los niños.
+    \item \textbf{A5:} Respuesta de 1 al 6 a: Hago que la gente se sienta a gusto.
+    \item \textbf{C1:} Respuesta de 1 al 6 a: Soy exigente en mi trabajo.
+    \item \textbf{C2:} Respuesta de 1 al 6 a: Continúo hasta que todo esté perfecto.
+    \item \textbf{C3:} Respuesta de 1 al 6 a: Hago las cosas de acuerdo a un plan.
+    \item \textbf{C4:} Respuesta de 1 al 6 a: Hago las cosas a medias.
+    \item \textbf{C5:} Respuesta de 1 al 6 a: Pierdo mi tiempo.
+    \item \textbf{E1:} Respuesta de 1 al 6 a: No hablo mucho.
+    \item \textbf{E2:} Respuesta de 1 al 6 a: Me resulta difícil acercarme a los demás.
+    \item \textbf{E3:} Respuesta de 1 al 6 a: Sé cautivar a la gente.
+    \item \textbf{E4:} Respuesta de 1 al 6 a: Hago amigos fácilmente.
+    \item \textbf{E5:} Respuesta de 1 al 6 a: Me hago cargo.
+    \item \textbf{N1:} Respuesta de 1 al 6 a: Me enojo fácilmente.
+    \item \textbf{N2:} Respuesta de 1 al 6 a: Me irrito fácilmente.
+    \item \textbf{N3:} Respuesta de 1 al 6 a: Tengo cambios de humor frecuentes.
+    \item \textbf{N4:} Respuesta de 1 al 6 a: A menudo me siento triste.
+    \item \textbf{N5:} Respuesta de 1 al 6 a: Me asusto fácilmente.
+    \item \textbf{O1:} Respuesta de 1 al 6 a: Estoy lleno de ideas.
+    \item \textbf{O2:} Respuesta de 1 al 6 a: Evito el material de lectura difícil.
+    \item \textbf{O3:} Respuesta de 1 al 6 a: Llevo las conversaciones a un nivel superior.
+    \item \textbf{O4:} Respuesta de 1 al 6 a: Paso tiempo reflexionando sobre las cosas.
+    \item \textbf{O5:} Respuesta de 1 al 6 a: No profundizo en temas.
+    \item \textbf{gender:} Género, hombre=1, mujer=2.
+    \item \textbf{education:} Educación, 1=Escuela secundaria, 2= Escuela secundaria finalizada, 3=Educación superior, 4=Universitario graduado, 5=Postgrado graduado.
+    \item \textbf{age:} Edad en años.
+\end{enumerate}
+
+
+En consiguiente, se presenta una mirada resumida de las variables del \textit{Big five}, pues al ser una encuesta es lógico que haya personas que no contesten algunas preguntas:\\
+\begin{figure}[htp]
+        \centering
+    	\includegraphics[scale=0.6]{figuras/basededatos.png}
+    	\label{fig: Figura1}
+\end{figure}\\
+
+\newpage
+\section{Análisis de datos}
+Primero, se verifica si hay valores perdidos:\\
+
+\begin{figure}[htp]
+        \centering
+    	\includegraphics[scale=1]{figuras/nan.png}
+    	\label{fig: Figura1}
+\end{figure}\\
+
+Es notorio que hay muchos valores perdidos, pero no se puede realizar ninguna transformación debido a que no se tiene información sobre estos, por lo que se decide eliminar las observaciones que tienen valores perdidos, quedando:\\
+
+\begin{figure}[htp]
+        \centering
+    	\includegraphics[scale=1]{figuras/nan2.png}
+    	\label{fig: Figura1}
+\end{figure}\\
+
+Se aprecia que ya no hay valores perdidos y quedaron entonces 2236 observaciones.\\
+
+Ahora, se presenta una tabla de estadísticas descriptivas de las variables:\\
+\vspace{6cm}
+
+\begin{table}[h!]
+  \begin{center}
+    \label{tab:table1}
+    \begin{tabular}{|l|c|c|c|c|c|} 
+    \hline
+      \textbf{Variable} & \textbf{Media} & \textbf{desv.est.} & \textbf{mediana} & \textbf{mínimo} & \textbf{máximo}\\
+      \hline
+A1      &2.41 &  1.41   &   2 &  1 &  6\\
+\hline
+A2     &4.80 & 1.17    &  5  & 1  & 6\\
+\hline
+A3  &4.60 & 1.30    &  5  & 1  & 6\\
+\hline
+A4    &4.70 & 1.48    &  5  & 1  & 6\\
+\hline
+A5  &  4.56 & 1.26    &  5  & 1  & 6\\
+\hline
+C1  &   4.50 & 1.24    &  5  & 1  & 6\\
+\hline
+C2  &  4.37 & 1.32    &  5  & 1  & 6\\
+\hline
+C3  &  4.30 & 1.29    &  5  & 1  & 6\\
+\hline
+C4   &2.55 & 1.38    &  2  & 1  & 6\\
+\hline
+C5 &3.30 & 1.63    &  3  & 1  & 6\\
+\hline
+E1    &2.97 & 1.63     & 3  & 1  & 6\\
+\hline
+E2  &3.14 & 1.61     & 3  & 1  & 6\\
+\hline
+E3  &4.00 & 1.35     & 4  & 1  & 6\\
+\hline
+E4    &4.42 & 1.46     & 5  & 1  & 6\\
+\hline
+N1  &2.93 & 1.57     & 3  & 1  & 6\\
+\hline
+N2    &3.51 & 1.53     & 4  & 1  & 6\\
+\hline
+N3    &3.22 & 1.60     & 3  & 1  & 6\\
+\hline
+N4    &3.19 & 1.57     & 3  & 1  & 6\\
+\hline
+N5    &2.97 & 1.62     & 3  & 1  & 6\\
+\hline
+O1    &4.82 & 1.13     & 5  & 1  & 6\\
+\hline
+O2  &2.71 & 1.57     & 2  & 1  & 6\\
+\hline
+O3   &4.44 & 1.22     & 5  & 1  & 6\\
+\hline
+O4   &4.89 & 1.22     & 5  & 1  & 6\\
+\hline
+O5    &2.49 & 1.33     & 2  & 1  & 6\\
+\hline
+gender  &1.67 & 0.47     & 2  & 1  & 2\\
+\hline
+education  &3.19 & 1.11     & 3  & 1  & 5\\
+\hline
+age    & 28.78 &11.13 &     26 &3  &86\\
+\hline
+    \end{tabular}
+  \end{center}
+  \caption{Estadísticas descriptivas de las variables}
+\end{table}\\
+Se observa que según la media de las variables del big five, las preguntas A1=Indiferente a los demás, C1=Exigente en el trabajo, E1=No hablar mucho, N1=enojarse fácilmente, O2=Evitar material de lectura difícil, O5 no profundizar en temas, obtuvieron los promedios menores a 3, por lo cual, en promedio las personas eligen puntajes bajos en variables que indican características que son ``negativas", a excepción de la variable C1 que puede ser considerada buena. Lo anterior, es llamativo, pues hay también más variables que toman cosas negativas como N2 pero que no tuvieron puntajes menores a 3. Se aprecia también que en las desviaciones estándar son bastante parecidas en todas las variables del big five, en cuanto a la mediana, la mayoría tiene un 50\% de sus datos aproximadamente menores que 5, mientras que otras variables (las que tienen media baja) tienen un 50\% de los datos aproximadamente menores que 3 y 2, lo cual es una diferencia notoria, que posiblemente es debido a la naturaleza de las preguntas. En cuanto al mínimo y máximo, se aprecia que todas tienen resultados extremos.\\
+
+Siguiendo con lo anterior, se presentan gráficos de barra para las variables que indican sobre la amabilidad (A1, A2, A3, A4, A5):\\
+
+\begin{figure}[htp]
+        \centering
+    	\includegraphics[scale=0.35]{figuras/A1.png}
+    	\caption{Gráfico de barras para las variables indicadoras de amabilidad.}
+    	\label{fig: Figura1}
+\end{figure}\\
+
+Se aprecia que las variables A1= Soy indiferente a los sentimientos de los demás, A3=Saber consolar a los demás y A4=Amar a los niños, tienen resultados parecidos, lo cual es llamativo, pues si bien las variables A3 y A4 tiene lógica que se comporten similares, A1 describe una característica que no necesariamente tenga que ver con las otras. Por otro lado, A2=preguntar sobre el bienestar de los demás y A5= hacer que la gente se sienta a gusto tienen un comportamiento semejante, lo cual es bastante lógico.\\
+
+Luego, se presentan los gráficos de barra de las variables que indican la escrupulosidad (C1,C2,C3,C4,C5):\\
+\vspace{3cm}
+
+\begin{figure}[htp]
+        \centering
+    	\includegraphics[scale=0.30]{figuras/C1.png}
+    	\caption{Gráficos de barras para las variables indicadoras de escrupulosidad}
+    	\label{fig: Figura1}
+\end{figure}\\
+
+Se observa que las variables C1= Exigente en mi trabajo, C2= continúo hasta que todo esté perfecto y C3=hacer las cosas de acuerdo a un plan tienen comportamientos parecidos, lo cual es bastante lógico, pues son preguntas que van de la mano. En cuanto a las variables C4= hacer las cosas a media y C5= perder el tiempo, tienen un comportamiento similar y contrario a las variables C1, C2 y C3, la razón es lógica, pues son preguntas opuestas.\\
+
+En consiguiente, se presentan los gráficos de barra de las variables que indican la extraversión (E1,E2,E3,E4,E5):\\
+\begin{figure}[htp]
+        \centering
+    	\includegraphics[scale=0.25]{figuras/E1.png}
+    	\caption{Gráficos de barra para variables indicadoras de extraversión.}
+    	\label{fig: Figura1}
+\end{figure}\\
+
+Es notorio que las variables E1=no hablar mucho y E2=resulta difícil acercarse a los demás, tienen un comportamiento similar, donde se concentra la mayoría de datos hacia valores bajos y medianos (3,4,5,6) mientras que E3= saber cautivar a la gente, E4= hacer amigos fácilmente y E5= hacerse cargo es lo contrario, teniendo la mayoría de frecuencias en 4,5 y 6 lo cual es lógico según la naturalidad de las variables.\\
+
+Siguiendo con lo anterior, se presentan los gráficos de barra de las variables que indican en neuroticismo (N1,N2,N3,N4,N5):\\
+
+\begin{figure}[htp]
+        \centering
+    	\includegraphics[scale=0.3]{figuras/N1.png}
+    	\caption{Gráficos de barras para variables indicadoras de neuroticismo.}
+    	\label{fig: Figura1}
+\end{figure}\\
+
+Es claro ver que todas las variables tienen un comportamiento bajo-medio, destacando en varias la frecuencia de 4. Tiene sentido, pues esta variable es normal que la gente prefiera responder un nivel medio, pues todos tenemos algunas veces cambios de humor o enojos. \\
+
+Finalizando, se presentan gráficos de barra de las variables que indican apertura a la experiencia (O1,O2,O3,O4,O5):\\
+\vspace{4cm}
+
+\begin{figure}[htp]
+        \centering
+    	\includegraphics[scale=0.25]{figuras/O1.png}
+    	\caption{Gráficos de barra para variables indicadoras de apertura a la experiencia.}
+    	\label{fig: Figura1}
+\end{figure}\\
+
+Es claro ver que las variables O1=estar lleno de ideas, O3=llevar las conversaciones a nivel superior y O4=pasar tiempo reflexionando sobre cosas tienen un comportamiento similar en las 4 primeras frecuencias, lo cual es lógico, pues son variables que preguntan cosas muy pensativas, donde las personas buscan destacar en este ámbito, además se destaca que para las frecuencias 5 y 6 tienen valores altos y además varían las proporciones lo cual puede ser producto al azar, mientras que O2=evitar el material de lectura fácil con O5=no profundizar en temas parecieran ser idénticas y contrarias a las demás, lo cual es lógico, pues son preguntas opuestas.\\
+
+Para poder analizar si las variables de cada grupo del big five e incluso entre variables de distintos grupos en cuestión, tienen un comportamiento correlacional, se realiza un análisis mediante la correlación $\tau$ de Kendall, el cual se refleja representado en la siguiente matriz:\\
+\vspace{7cm}
+
+\begin{figure}[htp]
+        \centering
+    	\includegraphics[scale=0.4]{figuras/cor.png}
+    	\caption{Matriz de correlación $\tau$ de Kendall para todas las variables del Big five.}
+    	\label{fig: Figura1}
+\end{figure}\\
+
+Es imprescindible indicar que en este tipo de análisis, donde se tienen variables que representan a muchas otras más como lo son las del Big five, una correlación de 0.3 puede ser mucho, por lo cual, se aprecia que las variables A2, A3, A4 y A5 tienen correlación significativa con C4,C5,E1 y E2 y muy poca entre ellas, el resto de correlaciones que no sean entre su propia naturaleza de variable no sobrepasan en valor absoluto el 0.2 lo cual es bastante bueno en este set de datos.\\
+
+\newpage
+\section{Aplicación análisis factorial}
+Primero, se realiza un gráfico que indica el número de factores que requiere cada modelo, en donde la decisión heurística se basa en que si los valores propios de los factores sean mayores a 1, también se observa cuando existe un punto de inflexión en la curva del \textit{screeplot}:\\
+\begin{figure}[htp]
+        \centering
+    	\includegraphics[scale=0.3]{figuras/scree.png}
+    	\caption{Valores propios según el número de factores y de componentes principales tanto en AF y ACP, respectivamente.}
+    	\label{fig: Figura1}
+\end{figure}\\
+
+Es notorio que para el análisis factorial se obtienen 4 factores significativos, al contrario de lo que se propuso en el trabajo de que deberían ser 5. Sin embargo, el quinto factor no se aleja tanto del 1, por tanto, se tomarán en cuenta los 2.\\
+
+En consiguiente, se presenta el gráfico del árbol AF con 4 factores:\\
+\vspace{6cm}
+
+\begin{figure}[htp]
+        \centering
+    	\includegraphics[scale=0.5]{figuras/AF4.png}
+    	\caption{Árbol de Análisis factorial con 4 factores}
+    	\label{fig: Figura1}
+\end{figure}\\
+
+Es notorio que al tener 4 factores se juntan la mayoría de variables $A_{i}$ y $E_{i}$, además las variables $A_{1}$ y $0_{4}$ no forma parte de ninguna variable. Las otras variables $O_{i}$ si se juntan en una variable, lo mismo con las $C_{i}$. \\
+
+Ahora se presenta el árbol del modelo de análisis factorial pero ahora con 5 factores:\\
+\vspace{4cm}
+
+\begin{figure}[htp]
+        \centering
+    	\includegraphics[scale=0.55]{figuras/AF5.png}
+    	\caption{Árbol de análisis factorial con 5 factores}
+    	\label{fig: Figura1}
+\end{figure}\\
+
+No se logra separar las variables como uno pensara, se destaca que parecieran explicar la misma información la mayoría de las variables $A_{i}$, $N_{i}$ y $E_{i}$, además, la E5 por si sola origina un factor.\\
+
+Debido a que no se ha logrado encontrar un resultado en donde los factores sean interpretables, por lo cual se realiza una rotación VARIMAX para analizar que resultados se obtienen. El gráfico de análisis factorial con rotación VARIMAX y 4 factores se presenta a continuación:\\
+
+\begin{figure}[htp]
+        \centering
+    	\includegraphics[scale=0.5]{figuras/AFvarimax1.png}
+    	\caption{Árbol de análisis factorial con rotación VARIMAX y 4 factores}
+    	\label{fig: Figura1}
+\end{figure}\\
+
+Es notorio que ahora con rotación VARIMAX las variables $N_{i},C_{i}$ y $N_{i}$ si ocupan factores por separado, sin embargo, aún las variables $A_{i}$ y $E_{i}$ juntas hacen un factor, además aún la A1 y O4 no son consideradas. En consiguiente, se realiza el gráfico del AF con rotación VARIMAX pero ahora con 5 factores:\\
+\vspace{4cm}
+
+\begin{figure}[htp]
+        \centering
+    	\includegraphics[scale=0.5]{figuras/AFvarimax2.png}
+    	\caption{Árbol de análisis factorial con rotación VARIMAX y 5 factores}
+    	\label{fig: Figura1}
+\end{figure}\\
+
+Ahora si se logra un modelo adecuado e interpretable, pues cada variable perteneciente a los razgos del Big five hacen un factor. Aquí, se puede decir que MR2 por si solo explica el neuroticismo, el MR1 por si solo explica la extraversión, el MR3 la escrupulosidad, MR5 la amabilidad y el MR4 la apertura a la experiencia. Por tanto, el conjunto total de datos puede reducirse a solo 5 mediante análisis factorial y explicar cada una de los razgos del Big five.\\
+
+En adición a lo anterior, ahora se agregan las variables demográficas para ver que explicabilidad tienen con las 5 variables obtenidas mediante AF:\\
+\vspace{5cm}
+
+\begin{figure}[htp]
+        \centering
+    	\includegraphics[scale=0.35]{figuras/AFvarimaxfinal.png}
+    	\caption{Árbol de análisis factorial con rotación VARIMAX y 5 factores incluídas variables demográficas.}
+    	\label{fig: Figura1}
+\end{figure}\\
+
+Es notorio que la edad es explicada por MR2 que a su vez explica el neuroticismo, lo cual tiene sentido debido a que cuando uno va creciendo aprende a solucionar los problemas de mejor manera, en cuanto la educación es explicada por MR4 que es la apertura a la experiencia lo cual es bastante lógico, pues cuando uno tiene más estudios uno obtiene más experiencia y se tiene más conciencia sobre el futuro y por último el género está asociado a MR4 y MR2 los cuales son la apertura a la experiencia y el neuroticismo, lo cual es concordante con la investigación de Barrio \& et al (2006) que llegaron a la conclusión que existe diferencia entre mujeres y hombres sobre la conciencia.\\
+
+Para realizar un análisis más detallado sobre el último modelo visto, se presenta la matriz de loadings:\\
+\vspace{7cm}
+
+\begin{table}[h!]
+  \begin{center}
+    \label{tab:table1}
+    \begin{tabular}{|l|c|c|c|c|c|} 
+    \hline
+      \textbf{Variable} & \textbf{MR2} & \textbf{MR1} & \textbf{MR3} & \textbf{MR5} & \textbf{MR4}\\
+      \hline
+A1    &    0.205& -0.178 & 0.075 &-0.425 &-0.072\\
+\hline
+A2    &    -0.015& -0.008&  0.072&  0.638 & 0.020\\
+\hline
+A3    &    -0.023& -0.106&  0.0332&  0.667 &0.027\\
+\hline
+A4    &    -0.055& -0.074&  0.185 &0.449 &-0.167\\
+\hline
+A5    &    -0.121&  -0.216&  0.004&  0.535&  0.044\\
+\hline
+C1    &     0.078&  0.0397 & 0.550& -0.004 & 0.159\\
+\hline
+C2    &     0.145&  0.104 & 0.658 & 0.092  &0.040\\
+\hline
+C3    &     0.026&  0.053 & 0.575 &0.084 &-0.065\\
+\hline
+C4   &     0.153&  0.007& -0.636 & 0.043 &-0.037\\
+\hline
+C5    &     0.167&  0.150&  -0.562& 0.026 & 0.0945\\
+\hline
+E1    &    -0.065&  0.538&  0.103 &-0.113 &-0.098\\
+\hline
+E2    &     0.086&  0.671& -0.016 &-0.065 &-0.069\\
+\hline
+E3    &     0.091&  -0.423&  0.010& 0.242 &0.297\\
+\hline
+E4    &    -0.009&  -0.572&  0.019&  0.318& -0.066\\
+\hline
+E5    &     0.163&  -0.425&  0.268& 0.065 & 0.206\\
+\hline
+N1    &     0.832&  -0.103& -0.002& -0.103& -0.047\\
+\hline
+N2    &     0.781& -0.037 & 0.013 &-0.095 & 0.019\\
+\hline
+N3    &     0.700&  0.115 &-0.026 & 0.089 & 0.015\\
+\hline
+N4    &     0.464& 0.411 &-0.136  &0.097  &0.087\\
+\hline
+N5    &     0.477&  0.206& -0.019 & 0.205 &-0.161\\
+\hline
+O1    &     0.000& -0.091 & 0.079 & 0.004 & 0.515\\
+\hline
+O2    &     0.188& -0.057 &-0.084 & 0.169 &-0.480\\
+\hline
+O3    &     0.036& -0.159 & 0.003 & 0.073 & 0.623\\
+\hline
+O4    &     0.109&  0.330 &-0.045 & 0.161 & 0.365\\
+\hline
+O5    &     0.117& -0.099 &-0.027 &0.0381 &-0.551\\
+\hline
+gender&     0.128& -0.018 & 0.080 &0.284 &-0.172\\
+\hline
+education& -0.072&  0.096 & 0.000 & 0.041&  0.151\\
+\hline
+age     &  -0.126&  0.055 & 0.067 &0.093 &0.054\\
+\hline
+    \end{tabular}
+  \end{center}
+  \caption{Loadings del modelo VARIMAX con 5 factores}
+\end{table}\\
+Es claro ver que los loadings en cada factor son significativamente más altos en las 5 variables del Big five que concuerdan en el gráfico, por ejemplo, en MR2 los loadings de las variables N1,N2,N3,N4 y N5 son mayores a 0.4 incluso unas son 0.7, a diferencia de las demás variables que todas son menores a 0.2.\\
+
+En cuanto a la varianza explicada puntual y acumulada del modelo se obtiene:\\
+\vspace{4cm}
+
+\begin{table}[h!]
+  \begin{center}
+    \label{tab:table1}
+    \begin{tabular}{|l|c|c|c|c|c|} 
+    \hline
+      \textbf{Proporciones} &\textbf{MR2} & \textbf{MR1} & \textbf{MR3} &\textbf{MR5} &\textbf{MR4}\\
+      \hline
+Proporción varianza explicada  &    0.11 &0.10& 0.08& 0.07& 0.06\\
+\hline
+Proporción varianza acumulada  &   0.11 &0.21& 0.29& 0.36 &0.42 \\
+\hline
+    \end{tabular}
+  \end{center}
+  \caption{Varianza puntual y explicada de cada factor en AF con rotación varimax y 5 factores}
+\end{table}\\
+
+Se observa que es bastante poco lo que estos 5 factores explican a la variabilidad total de la base de datos, lo cual es bastante lógico, pues como se ha mencionado las variables del Big five tienen por detrás muchísimas variables que intentan explicar, por tanto, el reducir la dimensionalidad de estas va a conllevar perder información de no solo la reducción de las variables presentes en la base de datos, sino que también de otras que no se tiene información.\\
+
+\newpage
+\section{Aplicación análisis de componentes principales}
+En consiguiente, debido al análisis de la investigación propuesta por Lovik \& et al (2017) que se planteó en la formulación teórica, se realiza un análisis de componentes principales(ACP) para comparar los resultados obtenidos con el análisis factorial con rotación VARIMAX. La proporción de variabilidad acumulada explicada al realizar un ACP se presenta en el siguiente gráfico:\\
+\begin{figure}[htp]
+        \centering
+    	\includegraphics[scale=0.3]{figuras/pca1.png}
+    	\caption{Proporción de variabilidad acumulada explicada por cada componente principal de ACP sobre todas las variables de BFI}
+    	\label{fig: Figura1}
+\end{figure}\\
+Es notorio que si se decide tomar 5 componentes principales, se obtiene un poco más de variabilidad explicada acumulada que en análisis factorial (casi un 50\%) lo cual es bastante bueno. Ahora se presenta un gráfico para saber como se explican las variables mediante los componentes principales:\\
+\vspace{5cm}
+\begin{figure}[htp]
+        \centering
+    	\includegraphics[scale=0.37]{figuras/pca2.png}
+    	\caption{Gráfico de contribución de cada variable en ACP.}
+    	\label{fig: Figura1}
+\end{figure}\\
+Es notorio que en cuanto a explicabilidad, se pierde bastante en ACP, pues se observa en la imagen que hay variables de diferentes grupos del big five que parecieran explicar lo mismo (ya que la dirección que tienen es parecida). Este es uno de las desventajas de trabajar con ACP, por ende, en este trabajo es preferible perder un poco de proporción de variabilidad acumulada explicada con los mismos factores y componentes principales, pero a la vez ganar una interpretabilidad mucho mayor.\\
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\chapter{Conclusiones}
+Debido a la poca información acerca de la base de datos y el cómo contestaron las preguntas las personas, es posible que al realizar la eliminación de las variables con valores perdidos se haya desaprovechado información valiosa de estos usuarios.\\
+
+En consiguiente, los resultados obtenidos indican que de las 28 variables que tenía la base de datos, se puede reducir a solo 5 variables mediante análisis factorial, las cuales en conjunto representan un 42\% de la variabilidad total del set de observaciones, lo cual es bastante bueno, pues según la naturalidad de las variables es muy difícil lograr llegar a resumir en 5 variables y que a la vez tenga una proporción de información parecida a ellas, sin embargo, los factores obtenidos si representan cada rasgo de las variables del Big five, por tanto, se puede decir que la división entre factores de las variables ha sido la esperada.\\
+
+Además, se logra identificar la ventaja que tiene el análisis factorial sobre el análisis de componentes principales, pues si bien el ACP obtiene una mayor proporción de variabilidad acumulada explicada con el mismo número de factores, en éste se pierde la interpretabilidad, por otro lado, en análisis factorial la interpretabilidad es perfecta, por ende, en este caso se sugiere considerar los resultados del análisis factorial por sobre en análisis de componentes principales.\\
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\chapter{Referencias}\label{Referencias}
+% Estilo de bibliografía APA
+% Si quiere usar el estilo IEEE comente esta línea
+
+
+% Descomente esta línea para usar el estilo de bibliografía IEEE
+%\bibliographystyle{ieeetr}
+\bibliography{referencias}
+\begin{itemize}
+\item Alderete, M. (2022).\textit{ Evaluación de la calidad de aguas superficiales en la cuenca del río Rímac mediante análisis multivariado para el período 2011-2018}[Tesis para optar al título de ingeniera ambiental]. Universidad Nacional Agraria La Molina. 
+[\textcolor{blue}{\href{http://repositorio.lamolina.edu.pe/bitstream/handle/20.500.12996/5360/alderete-malpartida-marleni-beatriz.pdf?sequence=1&isAllowed=y}{Ver aquí}}]
+\vspace{0.4cm}
+
+\item Barrio, M. \& et al. (2006). Análisis transversal de los cinco factores de personalidad por sexo y edad en niños españoles. \textit{ Revista Latinoamericana de Psicología, 38(3), 567-577.}
+[\textcolor{blue}{\href{http://pepsic.bvsalud.org/scielo.php?script=sci_arttext&pid=S0120-05342006000300009}{Ver aquí}}]
+\vspace{0.4cm}
+
+\item Depaula, P. \& Azzollini, S. (2013). Análisis del modelo big five de la personalidad como predictor de la inteligencia cultural.\textit{ PSIENCIA. Revista latinoamericana de ciencia psicológica, 5(1) 35-43}
+[\textcolor{blue}{\href{https://www.redalyc.org/pdf/3331/333127392005.pdf}{Ver aquí}}]
+\vspace{0.4cm}
+
+\item Dominguez, S. \& Merino, Cesar. (2018). Dos versiones breves del Big Five Inventory en universitarios peruanos:
+BFI-15p y BFI-10p.\textit{ Revista Peruana de Psicología, 24(1), 80-97.}
+[\textcolor{blue}{\href{https://www.redalyc.org/journal/686/68656777006/68656777006.pdf}{Ver aquí}}]
+\vspace{0.4cm}
+
+\item Goldberg, L. (1990). An Alternative "Description of Personality": The Big-Five Factor Structure.\textit{ Journal of Personality and Social Psychologs, 59(6), 1216-1229.}
+[\textcolor{blue}{\href{https://projects.ori.org/lrg/PDFs_papers/Goldberg.Big-Five-FactorsStructure.JPSP.1990.pdf}{Ver aquí}}]
+\vspace{0.4cm}
+
+\item Kaiser, H. (1958). The varimax criterion for analytic rotation in factor analysis.\textit{ Psychometrica, 23(3), 187-200.}
+[\textcolor{blue}{\href{http://cda.psych.uiuc.edu/psychometrika_highly_cited_articles/kaiser_1958.pdf}{Ver aquí}}]
+\vspace{0.4cm}
+
+\item Kendall, M. (1938). A new measure of rank correlation.\textit{ Biometrika, 30(1/2), 81-93.}
+[\textcolor{blue}{\href{https://www.jstor.org/stable/2332226}{Ver aquí}}]
+\vspace{0.4cm}
+
+\item Lovik, A. \& et al. (2017). Psychometric properties and comparison of different techniques for factor analysis on the Big Five Inventory from a Flemish sample.\textit{ Personality and individual differences, 117, 122-129.}
+[\textcolor{blue}{\href{https://www.sciencedirect.com/science/article/pii/S0191886917303859?casa_token=jpPBkAY19IkAAAAA:EkHHUJNNToWVoowAb6CLg3MJ43kfrIPFMX4pGF5hUAoi4LEmTk-7d9gWNYizA4G2FQHJ4_rbfHE}{Ver aquí}}]
+\vspace{0.4cm}
+ 
+\item Pearson, K. (1908). On lines and planes of closest fit to system of points.\textit{ Philosophical Magazine, 2, 559-572.}
+[\textcolor{blue}{\href{http://pca.narod.ru/pearson1901.pdf}{Ver aquí}}]
+\vspace{0.4cm}
+
+\item RDocumentation. (s.f). bfi: 25 Personality items representing 5 factors.
+[\textcolor{blue}{\href{https://www.rdocumentation.org/packages/psych/versions/2.2.5/topics/bfi}{Ver aquí}}]
+\vspace{0.4cm}
+
+\item Rencher, A. (2019). Methods of Multivariate Analysis. \textit{ 2ed: John Wiley & Sons, Inc}. [\textcolor{blue}{\href{https://www.ipen.br/biblioteca/slr/cel/0241}{Ver aquí}}]
+\vspace{0.4cm}
+
+\end{itemize}
+
+\end{document}
